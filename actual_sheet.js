@@ -447,19 +447,14 @@ var dragTrainLineListener = d3.behavior.drag()
 
 // Draw train lines
 function drawTrainLines(k) {
-  console.log("draw train lines",k);
   var train = trains[k];
   var listStops = train.stops;//.filter(st => st.type == 1);
-  console.log("listStops",listStops);
     var colorType = 0;
     if (train.currStopIndex == -1)
         colorType = 1;
     // Draw first stop
-    // var currStop = train.stops[0];
     var currStop = listStops[0];
     var currY = stations.filter(st => st.id == currStop.stationIndex)[0].y;
-    //console.log(newy);
-    //var currY = stations[currStop.stationIndex].y;
     var lineaY = train.inDirection == trainDirection.DOWN ? currY - verticalSpace : currY + verticalSpace;
     var dy = train.inDirection == trainDirection.UP ? 1 : -1;
 
@@ -543,20 +538,16 @@ function drawTrainLines(k) {
     for (var i = 1; i < listStops.length - 1; i++) {
         // var currStop = train.stops[i];
         currStop = listStops[i];
-        if(currStop.type === 1){
-          // if (i == train.currStopIndex && train.currStatus == statusType.ARRIVAL)
-          //     colorType = 1;
           currY = stations.filter(st => st.id == currStop.stationIndex)[0].y;
   //        var currY = stations[currStop.stationIndex].y;
   // vẽ đoạn nối giữa 2 điểm đón tiễn
+        // if(currStop.arrivalTime !== currStop.departedTime){
           appendLine(layer1, 'trainline_1', k, i,
               getX(currStop.arrivalTime, currStop.arrivalDay), currY,
               getX(currStop.departedTime, currStop.departedDay), currY,
               colorType);
+        // }
 
-          // if (i == train.currStopIndex && train.currStatus == statusType.DEPARTED)
-          //     colorType = 1;
-          // var nextStop = train.stops[i + 1];
           nextStop = listStops[i + 1];
           nextY = stations.filter(st => st.id == nextStop.stationIndex)[0].y;
           //var nextY = stations[nextStop.stationIndex].y;
@@ -564,7 +555,6 @@ function drawTrainLines(k) {
               getX(currStop.departedTime, currStop.departedDay), currY,
               getX(nextStop.arrivalTime, nextStop.arrivalDay), nextY,
               colorType);
-        }
 
     }
 
@@ -994,7 +984,7 @@ function defineChangesFromLine(circleID) {
                 console.log("currentFirstLine","#trainline_1_" + currentTrainIndex + "_" + currentStopIndex);
                 currentFirstLine = d3.select("#trainline_1_" + currentTrainIndex + "_" + currentStopIndex);
                 pushChangingList(currentLineObjs, "#trainline_2_" + currentTrainIndex + "_" + currentStopIndex);
-                for (var i = 1; i < trains[currentTrainIndex].stops.length; i++) {
+                for (i = 1; i < trains[currentTrainIndex].stops.length; i++) {
                     pushChangingList(currentLineObjs, "#trainline_1_" + currentTrainIndex + "_" + i);
                     pushChangingList(currentLineObjs, "#trainline_2_" + currentTrainIndex + "_" + i);
                 }
@@ -1002,7 +992,7 @@ function defineChangesFromLine(circleID) {
                 pushChangingList(currentLineObjs, "#trainline_b_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
 
                 pushChangingList(currentTextObjs, "#trainhour_2_" + currentTrainIndex + "_" + 0);
-                for (var i = 1; i < trains[currentTrainIndex].stops.length; i++) {
+                for (i = 1; i < trains[currentTrainIndex].stops.length; i++) {
                     pushChangingList(currentTextObjs, "#trainhour_1_" + currentTrainIndex + "_" + i);
                     pushChangingList(currentTextObjs, "#trainhour_2_" + currentTrainIndex + "_" + i);
                 }
@@ -1018,14 +1008,14 @@ function defineChangesFromLine(circleID) {
 
         // Define objects which would be changed
         currentCircleObjs.push(currentCircle);
-        for (var i = currentStopIndex + 1; i < trains[currentTrainIndex].stops.length; i++) {
+        for (i = currentStopIndex + 1; i < trains[currentTrainIndex].stops.length; i++) {
             pushChangingList(currentCircleObjs, "#traincircle_1_" + currentTrainIndex + "_" + i);
             pushChangingList(currentCircleObjs, "#traincircle_2_" + currentTrainIndex + "_" + i);
         }
         console.log("currentFirstLine","#trainline_1_" + currentTrainIndex + "_" + currentStopIndex);
         currentFirstLine = d3.select("#trainline_1_" + currentTrainIndex + "_" + currentStopIndex);
         pushChangingList(currentLineObjs, "#trainline_2_" + currentTrainIndex + "_" + currentStopIndex);
-        for (var i = currentStopIndex + 1; i < trains[currentTrainIndex].stops.length; i++) {
+        for (i = currentStopIndex + 1; i < trains[currentTrainIndex].stops.length; i++) {
             pushChangingList(currentLineObjs, "#trainline_1_" + currentTrainIndex + "_" + i);
             pushChangingList(currentLineObjs, "#trainline_2_" + currentTrainIndex + "_" + i);
         }
@@ -1033,7 +1023,7 @@ function defineChangesFromLine(circleID) {
         pushChangingList(currentLineObjs, "#trainline_b_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
 
         pushChangingList(currentTextObjs, "#trainhour_2_" + currentTrainIndex + "_" + currentStopIndex);
-        for (var i = currentStopIndex + 1; i < trains[currentTrainIndex].stops.length; i++) {
+        for (i = currentStopIndex + 1; i < trains[currentTrainIndex].stops.length; i++) {
             pushChangingList(currentTextObjs, "#trainhour_1_" + currentTrainIndex + "_" + i);
             pushChangingList(currentTextObjs, "#trainhour_2_" + currentTrainIndex + "_" + i);
         }
@@ -1983,16 +1973,22 @@ function updateTrainInfo(){
 
 //Them tac nghiep don tien
 function addAction(gaid){
-  var i = 0;
-  for(i = 0;i< virtualStops[currentTrainIndex].length;i++){
-    if(virtualStops[currentTrainIndex][i].stationIndex === gaid) {
-      break;
+
+  if(virtualStops[currentTrainIndex] !== undefined){
+    var i = 0;
+    for(i = 0;i< virtualStops[currentTrainIndex].length;i++){
+      if(virtualStops[currentTrainIndex][i].stationIndex === gaid) {
+        break;
+      }
     }
+    var changedTime = getTime(virtualStops[currentTrainIndex][i].departedTime,5);
+    virtualStops[currentTrainIndex][i].departedTime = parseInt(changedTime);
+    virtualStops[currentTrainIndex][i].type = 1;
+    trains[currentTrainIndex].stops = virtualStops[currentTrainIndex].filter(st => st.type == 1);
+  } else {
+    var changedTime = getTime(trains[currentTrainIndex].stops[currentStopIndex].departedTime,5);
+    trains[currentTrainIndex].stops[currentStopIndex].departedTime = parseInt(changedTime);
   }
-  var changedTime = getTime(virtualStops[currentTrainIndex][i].departedTime,5);
-  virtualStops[currentTrainIndex][i].departedTime = parseInt(changedTime);
-  virtualStops[currentTrainIndex][i].type = 1;
-  trains[currentTrainIndex].stops = virtualStops[currentTrainIndex].filter(st => st.type == 1);
   clearTrainLine(currentTrainIndex);
   drawTrains(currentTrainIndex);
   closePopup();
