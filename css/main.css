@@ -1,0 +1,116 @@
+.popupend {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 200px;
+    height: 180px;
+    /*border-radius: 6px;
+    box-shadow: #333 3px 3px 5px;*/
+    padding: 8px;
+    font-family: 'Segoe UI', arial, helvetica, sans-serif;
+}
+.popupend h2 {
+    margin: 5px 0 0 5px;
+    color: #fff;
+    font-size: 14px;
+    font-family: 'Segoe UI', arial, helvetica, sans-serif;
+}
+
+.popupendshort {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 200px;
+    height: 150px;
+    /*border-radius: 6px;
+    box-shadow: #333 3px 3px 5px;*/
+    padding: 8px;
+    font-family: 'Segoe UI', arial, helvetica, sans-serif;
+}
+.popupendshort h2 {
+    margin: 5px 0 0 0;
+    color: #fff;
+    font-size: 14px;
+    font-family: 'Segoe UI', arial, helvetica, sans-serif;
+}
+
+.popup {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 200px;
+    height: 80px;
+    /*border-radius: 6px;
+    box-shadow: #333 3px 3px 5px;*/
+    padding: 8px;
+    font-family: 'Segoe UI', arial, helvetica, sans-serif;
+}
+.popup h2 {
+    margin: 5px 0 0 5px;
+    color: #fff;
+    font-size: 14px;
+    font-family: 'Segoe UI', arial, helvetica, sans-serif;
+}
+
+.station {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1080px;
+    height: 350px;
+    padding: 8px;
+    font-family: 'Segoe UI', arial, helvetica, sans-serif;
+}
+
+.station h2 {
+    margin: 5px 0 0 5px;
+    color: #fff;
+    font-size: 24px;
+    font-family: 'Segoe UI', arial, helvetica, sans-serif;
+}
+
+.station alert {
+    margin: 5px 0 0 5px;
+    color: red;
+    font-size: 24px;
+    font-family: 'Segoe UI', arial, helvetica, sans-serif;
+}
+
+/*TABLE*/
+table {
+            width: 100%;
+            border: 1px solid #AAAAAA;
+            margin-top: 20px;
+            margin-bottom: 5px;
+        }
+
+        thead, tbody, th { background-color: #333333; display: block; color: #fff;}
+        tr, td { background-color: #464646; display: block; color: #fff;}
+
+        tr:after {
+            content: ' ';
+            display: block;
+            visibility: hidden;
+            clear: both;
+        }
+
+        thead th {
+            height: 35px;
+
+            /*text-align: left;*/
+        }
+
+        tbody {
+            height: 222px;
+            overflow-y: auto;
+        }
+
+        thead {
+            /* fallback */
+        }
+
+
+        tbody td, thead th {
+            width: 20%;
+            float: left;
+        }
