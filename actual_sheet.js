@@ -63,6 +63,7 @@ trains = [
         inDirection: trainDirection.DOWN, inStatus: statusType.CREATED, inSpecial: false,
         outDirection: trainDirection.DOWN, outStatus: statusType.DISSOLVED, outSpecial: false,
         currStatus: statusType.CREATED, currStopIndex: -1,
+        stopsName:[{xstart: 0, ystart:0, xend:0, yend:0 },{xstart: 0, ystart:0, xend:0, yend:0 }],//0 la name, 1 la engine
         stops: [
             { stationIndex: 101, arrivalDay: dayType.TODAY, departedDay: dayType.TODAY, arrivalTime: 1749, departedTime: 1800, note: "", type: 1 },
             { stationIndex: 102, arrivalDay: dayType.TODAY, departedDay: dayType.TODAY, arrivalTime: 1850, departedTime: 1850, note: "", type: 1 },
@@ -89,28 +90,31 @@ trains = [
             { stationIndex: 125, arrivalDay: dayType.TODAY, departedDay: dayType.TODAY, arrivalTime: 129, departedTime: 209, note: "", type: 1 }]
     },
     {
-        id: 101, name: 'SE4', type: trainType.KHACH,engine:"",
+        id: 101, name: 'SE4', type: trainType.KHACH,engine:"ENGINE-2",
         inDirection: trainDirection.DOWN, inStatus: statusType.ARRIVAL, inSpecial: false,
         outDirection: trainDirection.DOWN, outStatus: statusType.DEPARTED, outSpecial: false,
         currStatus: statusType.DEPARTED, currStopIndex: -1,
+        stopsName:[{xstart: 0, ystart:0, xend:0, yend:0 },{xstart: 0, ystart:0, xend:0, yend:0 }],
         stops: [
             { stationIndex: 100, arrivalDay: dayType.TODAY, departedDay: dayType.TODAY, arrivalTime: 16, departedTime: 16, note: "", type: 1 },
             { stationIndex: 125, arrivalDay: dayType.TODAY, departedDay: dayType.TODAY, arrivalTime: 1315, departedTime: 1315, note: "", type: 1 }]
     },
     {
-        id: 102, name: 'H4', type: trainType.HANG,engine:"",
+        id: 102, name: 'H4', type: trainType.HANG,engine:"ENGINE-3",
         inDirection: trainDirection.UP, inStatus: statusType.ARRIVAL, inSpecial: false,
         outDirection: trainDirection.UP, outStatus: statusType.DEPARTED, outSpecial: false,
         currStatus: statusType.ARRIVAL, currStopIndex: -1,
+        stopsName:[{xstart: 0, ystart:0, xend:0, yend:0 },{xstart: 0, ystart:0, xend:0, yend:0 }],
         stops: [
             { stationIndex: 125, arrivalDay: dayType.TODAY, departedDay: dayType.TODAY, arrivalTime: 2207, departedTime: 2207, note: "", type: 1 },
             { stationIndex: 100, arrivalDay: dayType.TODAY, departedDay: dayType.TODAY, arrivalTime: 315, departedTime: 315, note: "", type: 1 }]
     },
     {
-        id: 103, name: 'H6', type: trainType.HANG,engine:"",
+        id: 103, name: 'H6', type: trainType.HANG,engine:"ENGINE-4",
         inDirection: trainDirection.UP, inStatus: statusType.ARRIVAL, inSpecial: false,
         outDirection: trainDirection.UP, outStatus: statusType.DEPARTED, outSpecial: false,
         currStatus: statusType.ARRIVAL, currStopIndex: -1,
+        stopsName:[{xstart: 0, ystart:0, xend:0, yend:0 },{xstart: 0, ystart:0, xend:0, yend:0 }],
         stops: [
             { stationIndex: 125, arrivalDay: dayType.TODAY, departedDay: dayType.TODAY, arrivalTime: 307, departedTime: 307, note: "", type: 1 },
             { stationIndex: 100, arrivalDay: dayType.TODAY, departedDay: dayType.TODAY, arrivalTime: 715, departedTime: 715, note: "", type: 1 }]
@@ -141,6 +145,7 @@ var currentLineObjs = [];
 var currentCircleObjs = [];
 var currentFirstLine;
 var currentAdjustedMinutes = 0;
+var currentTextId = "";
 
 function zoom() {
     layer0.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
@@ -392,6 +397,17 @@ function mouseoutTrainLine() {
     }
 }
 
+var dragTrainNameListener = d3.behavior.drag()
+  .on("dragstart",function(){
+    d3.event.sourceEvent.stopPropagation();
+  })
+  . on("drag",function(){
+    updateCoordsText(d3.mouse(this)[0],d3.mouse(this)[1]);
+  })
+  .on("dragend",function(){
+
+  });
+
 // Drag train line
 var dragTrainLineListener = d3.behavior.drag()
     .on("dragstart", function () {
@@ -445,6 +461,27 @@ var dragTrainLineListener = d3.behavior.drag()
         console.log("dragend");
     });
 
+function updateTextStart(trainIndex,index, x, y){
+  var train = trains[trainIndex];
+  if(train.stopsName[index].xstart !== x){
+    train.stopsName[index].xstart = x;
+  }
+  if(train.stopsName[index].ystart !== y){
+    train.stopsName[index].ystart = y;
+  }
+}
+
+function updateTextEnd(trainIndex,index, x, y){
+  var train = trains[trainIndex];
+  if(train.stopsName[index].xend !== x){
+    train.stopsName[index].xend = x;
+  }
+  if(train.stopsName[index].yend !== y){
+    train.stopsName[index].yend = y;
+  }
+
+}
+
 // Draw train lines
 function drawTrainLines(k) {
   var train = trains[k];
@@ -455,6 +492,9 @@ function drawTrainLines(k) {
     // Draw first stop
     var currStop = listStops[0];
     var currY = stations.filter(st => st.id == currStop.stationIndex)[0].y;
+    var edge = countEdge(k);
+    var cssRotateIn = edge;
+    var cssRotateOut = edge;
     var lineaY = train.inDirection == trainDirection.DOWN ? currY - verticalSpace : currY + verticalSpace;
     var dy = train.inDirection == trainDirection.UP ? 1 : -1;
 
@@ -472,8 +512,20 @@ function drawTrainLines(k) {
                     colorType);
 
                 // Train name at start
-                appendTextName(layer3, "trainname_in", k, 0, getX(currStop.arrivalTime, currStop.arrivalDay) - horizontalSpace, lineaY + dy,
-                    dy, "start", train.name + '' + (train.engine == '' ? '':'/'+train.engine), colorType);
+                if(train.stopsName.xstart === 0){
+                  train.stopsName.xstart = getX(currStop.arrivalTime, currStop.arrivalDay) - horizontalSpace;
+                }
+                if(train.stopsName.ystart === 0){
+                  train.stopsName.ystart = lineaY + dy;
+                }
+                updateTextStart(k,0,getX(currStop.arrivalTime, currStop.arrivalDay) - horizontalSpace,lineaY + dy);
+                updateTextStart(k,1,getX(currStop.arrivalTime, currStop.arrivalDay) - horizontalSpace,lineaY + dy+10);
+
+                appendTextName(layer3, "trainname_in", k, 0, train.stopsName[0].xstart, train.stopsName[0].ystart,
+                    dy, "start", train.name, colorType,cssRotateIn);
+
+                appendEngineName(layer3, "trainengine_in", k, 0, train.stopsName[1].xstart, train.stopsName[1].ystart +10,
+                    dy, "start", train.engine, colorType,cssRotateIn);
             }
             // if (train.currStopIndex == 0 && train.currStatus == statusType.ARRIVAL)
             //     colorType = 1;
@@ -496,8 +548,15 @@ function drawTrainLines(k) {
                     colorType);
 
                 // Train name at start
-                appendTextName(layer3, "trainname_in", k, 0, getX(currStop.departedTime, currStop.departedDay) - horizontalSpace, lineaY + dy,
-                    dy, "start", train.name+ '' + (train.engine == '' ? '':'/'+train.engine), colorType);
+
+                updateTextStart(k,0,getX(currStop.departedTime, currStop.departedDay) - horizontalSpace,lineaY + dy);
+                updateTextStart(k,1,getX(currStop.departedTime, currStop.departedDay) - horizontalSpace,lineaY + dy+10);
+
+                appendTextName(layer3, "trainname_in", k, 0, train.stopsName[0].xstart, train.stopsName[0].ystart,
+                    dy, "start", train.name, colorType,cssRotateIn);
+
+                appendEngineName(layer3, "trainengine_in", k, 0, train.stopsName[1].xstart, train.stopsName[1].ystart+10,
+                    dy, "start", train.engine, colorType,cssRotateIn);
             }
             break;
 
@@ -514,8 +573,14 @@ function drawTrainLines(k) {
                     colorType);
 
                 // Train name at start
-                appendTextName(layer3, "trainname_in", k, 0, getX(currStop.departedTime, currStop.departedDay), lineaY + dy,
-                    dy, "middle", train.name+ '' + (train.engine == '' ? '':'/'+train.engine), colorType);
+                updateTextStart(k,0,getX(currStop.departedTime, currStop.departedDay),lineaY + dy);
+                updateTextStart(k,1,getX(currStop.departedTime, currStop.departedDay),lineaY + dy+10);
+
+                appendTextName(layer3, "trainname_in", k, 0, train.stopsName[0].xstart, train.stopsName[0].ystart,
+                    dy, "middle", train.name, colorType,cssRotateIn);
+
+                appendEngineName(layer3, "trainengine_in", k, 0, train.stopsName[1].xstart, train.stopsName[1].ystart+10,
+                    dy, "start", train.engine, colorType,cssRotateIn);
             }
             break;
     }
@@ -586,10 +651,14 @@ function drawTrainLines(k) {
                     getX(currStop.departedTime, currStop.departedDay) + horizontalSpace, lineaY,
                     colorType);
 
-                // Train name at end
-                appendTextName(layer3, "trainname_out", k, listStops.length - 1, getX(currStop.departedTime, currStop.departedDay) + horizontalSpace, lineaY - dy,
-                // appendTextName(layer3, "trainname_out", k, train.stops.length - 1, getX(currStop.departedTime, currStop.departedDay) + horizontalSpace, lineaY - dy,
-                    -dy, "end", train.name + '' + (train.engine == '' ? '':'/'+train.engine), colorType);
+                updateTextEnd(k,0,getX(currStop.departedTime, currStop.departedDay) + horizontalSpace,lineaY - dy);
+                updateTextEnd(k,1,getX(currStop.departedTime, currStop.departedDay) + horizontalSpace,lineaY - dy - 10);
+
+                appendTextName(layer3, "trainname_out", k, listStops.length - 1, train.stopsName[0].xend, train.stopsName[0].yend,
+                    -dy, "end", train.name, colorType,cssRotateOut);
+
+                appendEngineName(layer3, "trainengine_out", k, 0, train.stopsName[1].xend, train.stopsName[1].yend,
+                    dy, "start", train.engine, colorType,cssRotateOut);
             }
             break;
 
@@ -608,9 +677,13 @@ function drawTrainLines(k) {
                     colorType);
 
                 // Train name at end
-                // appendTextName(layer3, "trainname_out", k, train.stops.length - 1, getX(currStop.arrivalTime, currStop.arrivalDay), dissolvedY - dy,
-                appendTextName(layer3, "trainname_out", k, listStops.length - 1, getX(currStop.arrivalTime, currStop.arrivalDay), dissolvedY - dy,
-                    -dy, "middle", train.name + '' + (train.engine == '' ? '':'/'+train.engine), colorType);
+                updateTextEnd(k,0,getX(currStop.arrivalTime, currStop.arrivalDay),lineaY - dy);
+                updateTextEnd(k,1,getX(currStop.arrivalTime, currStop.arrivalDay),lineaY - dy - 10);
+
+                appendTextName(layer3, "trainname_out", k, listStops.length - 1, train.stopsName[0].xend, train.stopsName[0].yend,
+                    -dy, "middle", train.name, colorType, cssRotateOut);
+                appendEngineName(layer3, "trainengine_out", k, 0, train.stopsName[1].xend, train.stopsName[1].yend - 10,
+                    dy, "start", train.engine, colorType, cssRotateOut);
             }
             break;
     }
@@ -1035,7 +1108,6 @@ function defineChangesFromLine(circleID) {
 
 // Convert xAxis value to hours
 function xToHour(x) {
-  console.log("to hour X",x);
     var hour = (Math.floor(times[0] + parseInt(x) / hourSpace)) % 24;
     return (hour >= 10) ? hour : "0" + hour;
 }
@@ -1065,7 +1137,6 @@ function updatePopupCircleSize(circle) {
 // Update content of a circle
 function updatePopupCircleContent() {
     var x = currentCircle.attr("cx");
-    console.log(currentTrainIndex);
     var htmlText = '<h2>Tàu: ' + trains[currentTrainIndex].name + '</h2>';
     htmlText += '<h2>Ga: ' + stations.filter(st => st.id == currentStationIndex)[0].name + '</h2>';
     htmlText += '<h2>' + timeChangingText[currentColorType][currentChange] + xToHour(x) + ':' + xToMinute(x) + '</h2>';
@@ -1344,8 +1415,6 @@ var dragTrainCircleListener = d3.behavior.drag()
         popupOpen = false;
         editting = true;
 
-        // updatePopupCircleSize(currentCircle);
-        // updatePopupCircleContent();
         updatePopupCircleSizeEnd(currentCircle);
         updatePopupCircleEdit();
 
@@ -1509,7 +1578,7 @@ function appendTextHour(layer, prefix, trainIndex, stopIndex, x, y, dy, align, v
 }
 
 // Append and assign name to a train
-function appendTextName(layer, prefix, trainIndex, stopIndex, x, y, dy, align, text, colorType) {
+function appendTextName(layer, prefix, trainIndex, stopIndex, x, y, dy, align, text, colorType,cssclass) {
     var textObj = d3.select("#" + prefix + '_' + trainIndex + '_' + stopIndex);
     if (textObj[0][0] == null)
         layer.append("text")
@@ -1520,12 +1589,16 @@ function appendTextName(layer, prefix, trainIndex, stopIndex, x, y, dy, align, t
             .attr("x-backup", x)
             // .attr("fill", hourColor[colorType][trains[trainIndex].type])
             .attr("fill", "black")
+            .attr('transform','rotate('+cssclass+','+x+','+y+')')
             .style("opacity", 1)
             .style("font-family", "Segoe UI")
             .style("font-size", 12)
             .style("font-weight", 500)
             .style("text-anchor", align)
-            .style("alignment-baseline", dy > 0 ? "text-before-edge" : "text-after-edge");
+            .style("alignment-baseline", dy > 0 ? "text-before-edge" : "text-after-edge")
+            .style("cursor", "pointer")
+            .on("mouseover", onhoverText)
+            .call(dragTrainNameListener);
     else
         textObj
             .attr("id", prefix + '_' + trainIndex + '_' + stopIndex)
@@ -1535,12 +1608,58 @@ function appendTextName(layer, prefix, trainIndex, stopIndex, x, y, dy, align, t
             .attr("x-backup", x)
             // .attr("fill", hourColor[colorType][trains[trainIndex].type])
             .attr("fill", "black")
+            .attr('transform','rotate('+cssclass+','+x+','+y+')')
             .style("opacity", 1)
             .style("font-family", "Segoe UI")
             .style("font-size", 12)
             .style("font-weight", 500)
             .style("text-anchor", align)
-            .style("alignment-baseline", dy > 0 ? "text-before-edge" : "text-after-edge");
+            .style("alignment-baseline", dy > 0 ? "text-before-edge" : "text-after-edge")
+            .style("cursor", "pointer")
+            .on("mouseover", onhoverText)
+            .call(dragTrainNameListener);
+
+}
+
+function appendEngineName(layer, prefix, trainIndex, stopIndex, x, y, dy, align, text, colorType,cssclass) {
+    var textObj = d3.select("#" + prefix + '_' + trainIndex + '_' + stopIndex);
+    if (textObj[0][0] == null)
+        layer.append("text")
+            .attr("id", prefix + '_' + trainIndex + '_' + stopIndex)
+            .text(text)
+            .attr("x", x)
+            .attr("y", y)
+            .attr("x-backup", x)
+            // .attr("fill", hourColor[colorType][trains[trainIndex].type])
+            .attr("fill", "red")
+            .attr('transform','rotate('+cssclass+','+x+','+y+')')
+            .style("opacity", 1)
+            .style("font-family", "Segoe UI")
+            .style("font-size", 12)
+            .style("font-weight", 500)
+            .style("text-anchor", align)
+            .style("alignment-baseline", dy > 0 ? "text-before-edge" : "text-after-edge")
+            .style("cursor","pointer")
+            .on("mouseover", onhoverText)
+            .call(dragTrainNameListener);
+    else
+        textObj
+            .attr("id", prefix + '_' + trainIndex + '_' + stopIndex)
+            .text(text)
+            .attr("x", x)
+            .attr("y", y)
+            .attr("x-backup", x)
+            // .attr("fill", hourColor[colorType][trains[trainIndex].type])
+            .attr("fill", "red")
+            .attr('transform','rotate('+cssclass+','+x+','+y+')')
+            .style("opacity", 1)
+            .style("font-family", "Segoe UI")
+            .style("font-size", 12)
+            .style("font-weight", 500)
+            .style("text-anchor", align)
+            .style("alignment-baseline", dy > 0 ? "text-before-edge" : "text-after-edge")
+            .on("mouseover", onhoverText)
+            .call(dragTrainNameListener);
 }
 
 
@@ -1973,7 +2092,6 @@ function updateTrainInfo(){
 
 //Them tac nghiep don tien
 function addAction(gaid){
-
   if(virtualStops[currentTrainIndex] !== undefined){
     var i = 0;
     for(i = 0;i< virtualStops[currentTrainIndex].length;i++){
@@ -2122,4 +2240,57 @@ function showPopupClick(cx, cy){
       .attr("width", popupWidth + 1)
       .attr("height", popupHeightEnd + 1)
   popupOpen = true;
+}
+
+function onhoverText(){
+  currentTextId = d3.select(this).attr("id");
+}
+// function onhoverText(){
+//   d3.select(this).attr("style", "cursor:pointer");
+// }
+
+function updateCoordsText(x,y){
+  var info = currentTextId.split("_");
+  var train = trains[info[2]];
+  if(info[3] > 0){//neu la text end
+    if(info[0] === 'trainengine'){
+        train.stopsName[1].xend = x;
+        train.stopsName[1].yend = y;
+    } else {
+      train.stopsName[0].xend = x;
+      train.stopsName[0].yend = y;
+    }
+  } else {//text start
+    if(info[0] === 'trainengine'){
+        train.stopsName[1].xstart = x;
+        train.stopsName[1].ystart = y;
+    } else {
+      train.stopsName[0].xstart = x;
+      train.stopsName[0].ystart = y;
+    }
+  }
+  var textObj = d3.select("#"+currentTextId);
+  textObj.attr("x", x);
+  textObj.attr("y", y);
+}
+
+function countEdge(trainIndex){
+  var train = trains[trainIndex];
+  var noMin = countNoMinBetween(train.stops[0].arrivalTime,train.stops[train.stops.length - 1].arrivalTime);
+  var startIndex = 0;
+  var endIndex = 0;
+  var edge = 0;
+  for(var i = 0;i < stations.length;i++){
+    if(stations[i].id === train.stops[0].stationIndex) startIndex = i;
+    if(stations[i].id === train.stops[train.stops.length - 1].stationIndex) endIndex = i;
+    if(startIndex !== 0 && endIndex !== 0) break;
+  }
+  var numSt = endIndex - startIndex;
+  var line = Math.sqrt(Math.pow(noMin*minSpace,2) + Math.pow(numSt*stationSpace,2));
+  if(train.inDirection === trainDirection.UP){
+    edge = 0 - Math.acos((noMin*minSpace)/line)/3.14*180;
+  } else {
+    edge = Math.acos((noMin*minSpace)/line)/3.14*180;
+  }
+  return Math.floor(edge);
 }
