@@ -367,16 +367,16 @@ function mouseoverTrainLine() {
     currentCircleID = circleID;
     currentCircle = circle;
 
-    currentCircle
-        .transition().duration(200)
-        .attr("style", "cursor:pointer")
-        .attr("r", 5);
+    // currentCircle
+    //     .transition().duration(200)
+    //     .attr("style", "cursor:pointer")
+    //     .attr("r", 5);
 
     defineChangesFromLine(circleID);
 
     popupOpen = true;
 
-    updatePopupCircleSize(currentCircle);
+    // updatePopupCircleSize(currentCircle);
     // updatePopupCircleContent();
 }
 
@@ -424,7 +424,7 @@ var dragTrainLineListener = d3.behavior.drag()
         popupOpen = false;
         editting = true;
 
-        updatePopupCircleSize(currentCircle);
+        // updatePopupCircleSize(currentCircle);
         // updatePopupCircleContent();
 
         d3.event.sourceEvent.stopPropagation();
@@ -651,14 +651,14 @@ function drawTrainLines(k) {
                     getX(currStop.departedTime, currStop.departedDay) + horizontalSpace, lineaY,
                     colorType);
 
-                updateTextEnd(k,0,getX(currStop.departedTime, currStop.departedDay) + horizontalSpace,lineaY - dy);
-                updateTextEnd(k,1,getX(currStop.departedTime, currStop.departedDay) + horizontalSpace,lineaY - dy - 10);
+                updateTextEnd(k,0,getX(currStop.departedTime, currStop.departedDay) + horizontalSpace,lineaY - dy - 15);
+                updateTextEnd(k,1,getX(currStop.departedTime, currStop.departedDay) + horizontalSpace,lineaY - dy - 5);
 
                 appendTextName(layer3, "trainname_out", k, listStops.length - 1, train.stopsName[0].xend, train.stopsName[0].yend,
                     -dy, "end", train.name, colorType,cssRotateOut);
 
-                appendEngineName(layer3, "trainengine_out", k, 0, train.stopsName[1].xend, train.stopsName[1].yend,
-                    dy, "start", train.engine, colorType,cssRotateOut);
+                appendEngineName(layer3, "trainengine_out", k, listStops.length - 1, train.stopsName[1].xend, train.stopsName[1].yend,
+                    dy, "end", train.engine, colorType,cssRotateOut);
             }
             break;
 
@@ -682,8 +682,8 @@ function drawTrainLines(k) {
 
                 appendTextName(layer3, "trainname_out", k, listStops.length - 1, train.stopsName[0].xend, train.stopsName[0].yend,
                     -dy, "middle", train.name, colorType, cssRotateOut);
-                appendEngineName(layer3, "trainengine_out", k, 0, train.stopsName[1].xend, train.stopsName[1].yend - 10,
-                    dy, "start", train.engine, colorType, cssRotateOut);
+                appendEngineName(layer3, "trainengine_out", k, listStops.length - 1, train.stopsName[1].xend, train.stopsName[1].yend - 10,
+                    dy, "middle", train.engine, colorType, cssRotateOut);
             }
             break;
     }
@@ -741,11 +741,13 @@ function defineChanges(circleID) {
                 pushChangingList(currentLineObjs, "#trainline_b_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
 
                 pushChangingList(currentTextObjs, "#trainname_in_" + currentTrainIndex + "_" + 0);
+                pushChangingList(currentTextObjs, "#trainengine_in_" + currentTrainIndex + "_" + 0);
                 for (var i = 0; i < trains[currentTrainIndex].stops.length; i++) {
                     pushChangingList(currentTextObjs, "#trainhour_1_" + currentTrainIndex + "_" + i);
                     pushChangingList(currentTextObjs, "#trainhour_2_" + currentTrainIndex + "_" + i);
                 }
                 pushChangingList(currentTextObjs, "#trainname_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
+                pushChangingList(currentTextObjs, "#trainengine_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
             }
             else if (trains[currentTrainIndex].inStatus == statusType.DEPARTED) { // Tàu đi
                 currentChange = changeType.DEPARTED;
@@ -768,11 +770,13 @@ function defineChanges(circleID) {
                 pushChangingList(currentLineObjs, "#trainline_b_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
 
                 pushChangingList(currentTextObjs, "#trainname_in_" + currentTrainIndex + "_" + 0);
+                pushChangingList(currentTextObjs, "#trainengine_in_" + currentTrainIndex + "_" + 0);
                 for (var i = 0; i < trains[currentTrainIndex].stops.length; i++) {
                     pushChangingList(currentTextObjs, "#trainhour_1_" + currentTrainIndex + "_" + i);
                     pushChangingList(currentTextObjs, "#trainhour_2_" + currentTrainIndex + "_" + i);
                 }
                 pushChangingList(currentTextObjs, "#trainname_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
+                pushChangingList(currentTextObjs, "#trainengine_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
             }
             else {
                 if (trains[currentTrainIndex].stops[currentStopIndex].arrivalTime == trains[currentTrainIndex].stops[currentStopIndex].departedTime) {// Tàu đến: Đi hoặc Thông qua
@@ -795,11 +799,13 @@ function defineChanges(circleID) {
                     pushChangingList(currentLineObjs, "#trainline_b_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
 
                     pushChangingList(currentTextObjs, "#trainname_in_" + currentTrainIndex + "_" + 0);
+                    pushChangingList(currentTextObjs, "#trainengine_in_" + currentTrainIndex + "_" + 0);
                     for (var i = 0; i < trains[currentTrainIndex].stops.length; i++) {
                         pushChangingList(currentTextObjs, "#trainhour_1_" + currentTrainIndex + "_" + i);
                         pushChangingList(currentTextObjs, "#trainhour_2_" + currentTrainIndex + "_" + i);
                     }
                     pushChangingList(currentTextObjs, "#trainname_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
+                    pushChangingList(currentTextObjs, "#trainengine_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
                 }
                 else {
                     currentChange = changeType.DEPARTED;
@@ -827,6 +833,7 @@ function defineChanges(circleID) {
                         pushChangingList(currentTextObjs, "#trainhour_2_" + currentTrainIndex + "_" + i);
                     }
                     pushChangingList(currentTextObjs, "#trainname_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
+                    pushChangingList(currentTextObjs, "#trainengine_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
                 }
             }
         }
@@ -850,11 +857,13 @@ function defineChanges(circleID) {
             pushChangingList(currentLineObjs, "#trainline_b_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
 
             pushChangingList(currentTextObjs, "#trainname_in_" + currentTrainIndex + "_" + 0);
+            pushChangingList(currentTextObjs, "#trainengine_in_" + currentTrainIndex + "_" + 0);
             for (var i = 0; i < trains[currentTrainIndex].stops.length; i++) {
                 pushChangingList(currentTextObjs, "#trainhour_1_" + currentTrainIndex + "_" + i);
                 pushChangingList(currentTextObjs, "#trainhour_2_" + currentTrainIndex + "_" + i);
             }
             pushChangingList(currentTextObjs, "#trainname_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
+            pushChangingList(currentTextObjs, "#trainengine_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
         }
     }
     else {
@@ -884,6 +893,7 @@ function defineChanges(circleID) {
                     pushChangingList(currentTextObjs, "#trainhour_2_" + currentTrainIndex + "_" + i);
                 }
                 pushChangingList(currentTextObjs, "#trainname_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
+                pushChangingList(currentTextObjs, "#trainengine_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
             }
             else {
                 currentChange = changeType.DEPARTED;
@@ -912,6 +922,7 @@ function defineChanges(circleID) {
                     pushChangingList(currentTextObjs, "#trainhour_2_" + currentTrainIndex + "_" + i);
                 }
                 pushChangingList(currentTextObjs, "#trainname_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
+                pushChangingList(currentTextObjs, "#trainengine_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
             }
         }
         else {
@@ -937,6 +948,7 @@ function defineChanges(circleID) {
                 pushChangingList(currentTextObjs, "#trainhour_2_" + currentTrainIndex + "_" + i);
             }
             pushChangingList(currentTextObjs, "#trainname_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
+            pushChangingList(currentTextObjs, "#trainengine_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
         }
     }
 
@@ -984,11 +996,13 @@ function defineChangesFromLine(circleID) {
             pushChangingList(currentLineObjs, "#trainline_b_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
 
             pushChangingList(currentTextObjs, "#trainname_in_" + currentTrainIndex + "_" + 0);
+            pushChangingList(currentTextObjs, "#trainengine_in_" + currentTrainIndex + "_" + 0);
             for (var i = 0; i < trains[currentTrainIndex].stops.length; i++) {
                 pushChangingList(currentTextObjs, "#trainhour_1_" + currentTrainIndex + "_" + i);
                 pushChangingList(currentTextObjs, "#trainhour_2_" + currentTrainIndex + "_" + i);
             }
             pushChangingList(currentTextObjs, "#trainname_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
+            pushChangingList(currentTextObjs, "#trainengine_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
         }
         else if (trains[currentTrainIndex].inStatus == statusType.DEPARTED) { // Tàu đi
             currentChange = changeType.DEPARTED;
@@ -1011,11 +1025,13 @@ function defineChangesFromLine(circleID) {
             pushChangingList(currentLineObjs, "#trainline_b_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
 
             pushChangingList(currentTextObjs, "#trainname_in_" + currentTrainIndex + "_" + 0);
+            pushChangingList(currentTextObjs, "#trainengine_in_" + currentTrainIndex + "_" + 0);
             for (var i = 0; i < trains[currentTrainIndex].stops.length; i++) {
                 pushChangingList(currentTextObjs, "#trainhour_1_" + currentTrainIndex + "_" + i);
                 pushChangingList(currentTextObjs, "#trainhour_2_" + currentTrainIndex + "_" + i);
             }
             pushChangingList(currentTextObjs, "#trainname_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
+            pushChangingList(currentTextObjs, "#trainengine_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
         }
         else {
             if (trains[currentTrainIndex].stops[currentStopIndex].arrivalTime == trains[currentTrainIndex].stops[currentStopIndex].departedTime) {// Tàu đến: Đi hoặc Thông qua
@@ -1038,11 +1054,13 @@ function defineChangesFromLine(circleID) {
                 pushChangingList(currentLineObjs, "#trainline_b_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
 
                 pushChangingList(currentTextObjs, "#trainname_in_" + currentTrainIndex + "_" + 0);
+                pushChangingList(currentTextObjs, "#trainengine_in_" + currentTrainIndex + "_" + 0);
                 for (var i = 0; i < trains[currentTrainIndex].stops.length; i++) {
                     pushChangingList(currentTextObjs, "#trainhour_1_" + currentTrainIndex + "_" + i);
                     pushChangingList(currentTextObjs, "#trainhour_2_" + currentTrainIndex + "_" + i);
                 }
                 pushChangingList(currentTextObjs, "#trainname_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
+                pushChangingList(currentTextObjs, "#trainengine_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
             }
             else {
                 currentChange = changeType.DEPARTED;
@@ -1070,6 +1088,7 @@ function defineChangesFromLine(circleID) {
                     pushChangingList(currentTextObjs, "#trainhour_2_" + currentTrainIndex + "_" + i);
                 }
                 pushChangingList(currentTextObjs, "#trainname_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
+                pushChangingList(currentTextObjs, "#trainengine_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
             }
         }
     }
@@ -1101,6 +1120,7 @@ function defineChangesFromLine(circleID) {
             pushChangingList(currentTextObjs, "#trainhour_2_" + currentTrainIndex + "_" + i);
         }
         pushChangingList(currentTextObjs, "#trainname_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
+        pushChangingList(currentTextObjs, "#trainengine_out_" + currentTrainIndex + "_" + parseInt(trains[currentTrainIndex].stops.length - 1));
     }
     console.log("Thay doi: ", timeChangingText[currentColorType][currentChange]);
     console.log("dragMinX: ", dragMinX);
@@ -1487,6 +1507,14 @@ function updateOnDraggingCircle(dx) {
             var backupX = parseFloat(d3.select("#" + circleID).attr("cx-backup"));
             var minute = (Math.round(backupX / minSpace) + 1000 + currentAdjustedMinutes) % 10;
             currentTextObjs[i].text(minute % 10);
+        }
+
+        if(currentTextObjs[i].attr("id").includes("trainname") || currentTextObjs[i].attr("id").includes("trainengine")){
+          var currTransform = currentTextObjs[i].attr("transform");
+          currTransform = currTransform.split(",");
+          currTransform[1] = newX;
+          currTransform = currTransform.join(",");
+          currentTextObjs[i].attr("transform",currTransform);
         }
     }
 }
@@ -2049,15 +2077,14 @@ function countNoMinBetween(startTime, endTime){
 
 function updatePopupCircleEdit(){
   var x = currentCircle.attr("cx");
-  // var htmlText = '<h2>Tàu: ' + train.name + '</h2>';
   console.log("current stops index",currentStopIndex);
   var htmlText = '<h2>Tàu: ' + trains[currentTrainIndex].name + '</h2>';
   htmlText += '<h2>Ga: ' + stations.filter(st => st.id == currentStationIndex)[0].name + '</h2>';
   htmlText += '<h2>' + timeChangingText[currentColorType][currentChange] + xToHour(x) + ':' + xToMinute(x) + '</h2>';
-    // htmlText += '<button id="action" type="submit" class="btn btn-success btn-block" onclick="applyAction()" style="margin: 10px 0 0 0;padding: 0px 15px 0px 15px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">' + confirmLabel[currentChange] + '</button>';
   if(currentChange === changeType.PASS_THROUGH){
       htmlText += '<button id="apply-add-action" type="submit" class="btn btn-primary btn-block" onclick="addAction('+currentStationIndex+')" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">Thêm Đón/Tiễn</button>';
-  } else if(currentChange === changeType.ARRIVAL){
+  } else if(currentChange === changeType.ARRIVAL || currentChange === changeType.DEPARTED){
+    htmlText += '<button id="apply-remove-action" type="submit" class="btn btn-danger btn-block" onclick="removeAction()" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">Xóa tác nghiệp</button>';
     htmlText += '<button id="apply-add-note" type="submit" class="btn btn-primary btn-block" onclick="addNote('+currentStationIndex+')" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">Thêm Cắt/Móc</button>';
     htmlText += '<div id="add-note" class="input-group" style="display:none"><input id="add-note-content" value="'+getNoteContent()+'" class="form-control" /><div class="input-group-append"><button type="button" onclick="addNoteContent()" class="btn btn-outline-secondary">Thêm</button></div></div>'
   }
@@ -2066,14 +2093,11 @@ function updatePopupCircleEdit(){
     htmlText += '<button id="apply-edit-info" type="submit" class="btn btn-primary btn-block" onclick="editTrainInfo()" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">Sửa Thông Tin</button>';
     htmlText += '<div id="div-edit-train-name" class="input-group" style="display:none"><input id="edit-train-name" value="'+trains[currentTrainIndex].name+'" class="form-control" /></div>'
     htmlText += '<div id="div-edit-train-engine" class="input-group" style="display:none"><input id="edit-train-engine" value="'+trains[currentTrainIndex].engine+'" class="form-control" /><div class="input-group-append"><button type="button" onclick="updateTrainInfo()" class="btn btn-outline-secondary">Sửa</button></div></div>'
-  } else {
-    htmlText += '<button id="apply-remove-action" type="submit" class="btn btn-danger btn-block" onclick="removeAction()" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">Xóa tác nghiệp</button>';
   }
+  else {
 
-
+  }
   htmlText += '<button id="cancel" type="submit" class="btn btn-danger btn-block" onclick="cancelChangeTime()" style="margin: 10px 0 00px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">Hủy</button>';
-  //htmlText += '<input type="text" class="form-control" id="time" placeholder="Thời gian">';
-  console.log("html popup",htmlText);
   popup.html(htmlText);
 }
 
@@ -2195,6 +2219,10 @@ function getClickGa(arrXY){
 
 function lineClick(){
   var clickGa = getClickGa(d3.mouse(this));
+  // var lineID = d3.select(this).attr("id");
+  // var currentLine = d3.select('#'+lineID);
+  // currentTrainIndex = parseInt(currentLine.attr("train-index"));
+  // currentColorType = parseInt(currentLine.attr("color-type"));
   console.log("clickGa",clickGa);
   var stops = virtualStops[currentTrainIndex];
   var clickStops;
@@ -2207,7 +2235,7 @@ function lineClick(){
     }
     // var clickStops = stops.filter(st => st.stationIndex === clickGa.gaid)[0];
   }
-  updatePopupCircleClick(clickGa.gaid, getX(clickStops.departedTime, clickStops.departedDay), clickGa.y);
+  updatePopupCircleClick(clickGa.gaid, d3.mouse(this)[0], d3.mouse(this)[1]);
 }
 
 function updatePopupCircleClick(gaid,x,y){
@@ -2231,6 +2259,7 @@ function updatePopupCircleClick(gaid,x,y){
 }
 
 function showPopupClick(cx, cy){
+  console.log("show popup at:",cx+"|"+cy);
   popup.style("visibility", "visible")
       .attr("class", "popupend")
       .attr("x", parseFloat(cx))
