@@ -377,7 +377,7 @@ function mouseoverTrainLine() {
     popupOpen = true;
 
     updatePopupCircleSize(currentCircle);
-    updatePopupCircleContent();
+    // updatePopupCircleContent();
 }
 
 // Mouse out train line event
@@ -425,7 +425,7 @@ var dragTrainLineListener = d3.behavior.drag()
         editting = true;
 
         updatePopupCircleSize(currentCircle);
-        updatePopupCircleContent();
+        // updatePopupCircleContent();
 
         d3.event.sourceEvent.stopPropagation();
     })
@@ -438,7 +438,7 @@ var dragTrainLineListener = d3.behavior.drag()
             return;
 
         updateOnDraggingCircle(d3.event.dx);
-        updatePopupCircleContent();
+        // updatePopupCircleContent();
     })
     .on("dragend", function () {
         var lineID = d3.select(this).attr("id");
@@ -1136,6 +1136,7 @@ function updatePopupCircleSize(circle) {
 
 // Update content of a circle
 function updatePopupCircleContent() {
+  console.log("updatePopupCircleContent",updatePopupCircleContent);
     var x = currentCircle.attr("cx");
     var htmlText = '<h2>Tàu: ' + trains[currentTrainIndex].name + '</h2>';
     htmlText += '<h2>Ga: ' + stations.filter(st => st.id == currentStationIndex)[0].name + '</h2>';
@@ -1203,6 +1204,7 @@ function allowAction() {
 
 // Update content of a circle at the end
 function updatePopupCircleContentEnd() {
+  console.log("updatePopupCircleContentEnd",updatePopupCircleContentEnd);
     var x = currentCircle.attr("cx");
     // var htmlText = '<h2>Tàu: ' + train.name + '</h2>';
     var htmlText = '<h2>Tàu: ' + trains[currentTrainIndex].name + '</h2>';
@@ -1426,7 +1428,7 @@ var dragTrainCircleListener = d3.behavior.drag()
             return;
 
         updateOnDraggingCircle(d3.event.dx);
-        updatePopupCircleContent();
+        // updatePopupCircleContent();
     })
     .on("dragend", function () {
         // Do not allow dragging with happenned events
@@ -2050,13 +2052,12 @@ function updatePopupCircleEdit(){
   // var htmlText = '<h2>Tàu: ' + train.name + '</h2>';
   console.log("current stops index",currentStopIndex);
   var htmlText = '<h2>Tàu: ' + trains[currentTrainIndex].name + '</h2>';
-  console.log("currentStationIndex",currentStationIndex);
   htmlText += '<h2>Ga: ' + stations.filter(st => st.id == currentStationIndex)[0].name + '</h2>';
   htmlText += '<h2>' + timeChangingText[currentColorType][currentChange] + xToHour(x) + ':' + xToMinute(x) + '</h2>';
     // htmlText += '<button id="action" type="submit" class="btn btn-success btn-block" onclick="applyAction()" style="margin: 10px 0 0 0;padding: 0px 15px 0px 15px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">' + confirmLabel[currentChange] + '</button>';
   if(currentChange === changeType.PASS_THROUGH){
       htmlText += '<button id="apply-add-action" type="submit" class="btn btn-primary btn-block" onclick="addAction('+currentStationIndex+')" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">Thêm Đón/Tiễn</button>';
-  } else if(currentChange == changeType.ARRIVAL){
+  } else if(currentChange === changeType.ARRIVAL){
     htmlText += '<button id="apply-add-note" type="submit" class="btn btn-primary btn-block" onclick="addNote('+currentStationIndex+')" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">Thêm Cắt/Móc</button>';
     htmlText += '<div id="add-note" class="input-group" style="display:none"><input id="add-note-content" value="'+getNoteContent()+'" class="form-control" /><div class="input-group-append"><button type="button" onclick="addNoteContent()" class="btn btn-outline-secondary">Thêm</button></div></div>'
   }
@@ -2072,6 +2073,7 @@ function updatePopupCircleEdit(){
 
   htmlText += '<button id="cancel" type="submit" class="btn btn-danger btn-block" onclick="cancelChangeTime()" style="margin: 10px 0 00px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">Hủy</button>';
   //htmlText += '<input type="text" class="form-control" id="time" placeholder="Thời gian">';
+  console.log("html popup",htmlText);
   popup.html(htmlText);
 }
 
