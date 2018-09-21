@@ -155,10 +155,26 @@ function zoom() {
     layer2a.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
     layer3.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
     layer4.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    // layer3.attr("transform", "translate(" + d3.event.translate + ")scale(1)");
+    // layer4.attr("transform", "translate(" + d3.event.translate + ")scale(1)");
+    d3.selectAll("text").each(function(object){
+      var obj = d3.select(this);//.attr("font-size");
+      var currSize = obj.attr("font-size");
+      if(currSize !== null){
+          currSize = currSize.replace("px","");
+          obj.style("font-size",parseInt(currSize)/d3.event.scale);
+      }
+    });
+    // d3.select('#popup-rect')
+    // .attr("width",popupWidth/d3.event.scale + 1)
+    // .attr("height",popupHeightEnd/d3.event.scale + 1);
+    // console.log(d3.select('#popup-content').text());
+    // .attr("width",popupWidth/d3.event.scale + 1)
+    // .attr("height",popupWidth/d3.event.scale + 1);
 }
 
 // define the zoomListener which calls the zoom function on the "zoom" event constrained within the scaleExtents
-var zoomListener = d3.behavior.zoom().scaleExtent([0.1, 10]).on("zoom", zoom);
+var zoomListener = d3.behavior.zoom().scaleExtent([0.5, 10]).on("zoom", zoom);
 
 // define the baseSvg, attaching a class for styling and the zoomListener
 var baseSvg = d3.select("#main-container").append("svg")
@@ -322,6 +338,7 @@ function appendLine(layer, prefix, trainIndex, stopIndex, x1, y1, x2, y2, colorT
             .attr("x2-backup", x2)
             .attr("fill", "none")
             .attr("stroke-width", 2 - colorType)
+            .attr("vector-effect", "non-scaling-stroke")
             .attr("stroke", trainColor[colorType][trains[trainIndex].type])
             .style("opacity", 1);
 
@@ -348,6 +365,7 @@ function appendLine(layer, prefix, trainIndex, stopIndex, x1, y1, x2, y2, colorT
             .attr("x2-backup", x2)
             .attr("fill", "none")
             .attr("stroke-width", 2 - colorType)
+            .attr("vector-effect", "non-scaling-stroke")
             .attr("stroke", trainColor[colorType][trains[trainIndex].type])
             .style("opacity", 1);
     }
@@ -405,7 +423,7 @@ var dragTrainNameListener = d3.behavior.drag()
     updateCoordsText(d3.mouse(this)[0],d3.mouse(this)[1]);
   })
   .on("dragend",function(){
-
+    updateCoordsTextEnd(d3.mouse(this)[0],d3.mouse(this)[1]);
   });
 
 // Drag train line
@@ -1535,6 +1553,7 @@ function appendCircle(layer, prefix, trainIndex, stopIndex, cx, cy, colorType) {
             .attr("cx-backup", cx)
             .attr("fill", "white")
             .attr("stroke-width",2)
+            .attr("vector-effect", "non-scaling-stroke")
             .attr("stroke", trainColor[colorType][trains[trainIndex].type])
             .style("opacity", 1)
             .on("mouseover", mouseoverTrainCircle)
@@ -1553,6 +1572,7 @@ function appendCircle(layer, prefix, trainIndex, stopIndex, cx, cy, colorType) {
             .attr("cx-backup", cx)
             .attr("fill", "white")
             .attr("stroke-width", 1)
+            .attr("vector-effect", "non-scaling-stroke")
             .attr("stroke", trainColor[colorType][trains[trainIndex].type])
             .style("opacity", 1)
             .on("mouseover", mouseoverTrainCircle)
@@ -1577,6 +1597,7 @@ function appendTextHour(layer, prefix, trainIndex, stopIndex, x, y, dy, align, v
             .attr("y-backup", y)
             // .attr("fill", hourColor[colorType][trains[trainIndex].type])
             .attr("fill", "black")
+            .attr("font-size",8)
             .style("opacity", 1)
             .style("font-family", "Segoe UI")
             .style("font-size", 8)
@@ -1598,6 +1619,7 @@ function appendTextHour(layer, prefix, trainIndex, stopIndex, x, y, dy, align, v
             .attr("y-backup", y)
             // .attr("fill", hourColor[colorType][trains[trainIndex].type])
             .attr("fill", "black")
+            .attr("font-size",8)
             .style("opacity", 1)
             .style("font-family", "Segoe UI")
             .style("font-size", 8)
@@ -1619,6 +1641,7 @@ function appendTextName(layer, prefix, trainIndex, stopIndex, x, y, dy, align, t
             .attr("x-backup", x)
             // .attr("fill", hourColor[colorType][trains[trainIndex].type])
             .attr("fill", "black")
+            .attr("font-size",12)
             .attr('transform','rotate('+cssclass+','+x+','+y+')')
             .style("opacity", 1)
             .style("font-family", "Segoe UI")
@@ -1639,6 +1662,7 @@ function appendTextName(layer, prefix, trainIndex, stopIndex, x, y, dy, align, t
             // .attr("fill", hourColor[colorType][trains[trainIndex].type])
             .attr("fill", "black")
             .attr('transform','rotate('+cssclass+','+x+','+y+')')
+            .attr("font-size",12)
             .style("opacity", 1)
             .style("font-family", "Segoe UI")
             .style("font-size", 12)
@@ -1660,6 +1684,7 @@ function appendEngineName(layer, prefix, trainIndex, stopIndex, x, y, dy, align,
             .attr("x", x)
             .attr("y", y)
             .attr("x-backup", x)
+            .attr("font-size",12)
             // .attr("fill", hourColor[colorType][trains[trainIndex].type])
             .attr("fill", "red")
             .attr('transform','rotate('+cssclass+','+x+','+y+')')
@@ -1679,6 +1704,7 @@ function appendEngineName(layer, prefix, trainIndex, stopIndex, x, y, dy, align,
             .attr("x", x)
             .attr("y", y)
             .attr("x-backup", x)
+            .attr("font-size",12)
             // .attr("fill", hourColor[colorType][trains[trainIndex].type])
             .attr("fill", "red")
             .attr('transform','rotate('+cssclass+','+x+','+y+')')
@@ -1708,6 +1734,7 @@ function appendTextNode(layer, prefix, trainIndex, stopIndex, x, y, dy, align, t
             .style("font-family", "Segoe UI")
             .style("font-size", 10)
             .style("font-weight", 500)
+            .attr("font-size",10)
             // .style('font-color','red')
             .style("text-anchor", align);
             // .style("alignment-baseline", dy > 0 ? "text-before-edge" : "text-after-edge");
@@ -1719,6 +1746,7 @@ function appendTextNode(layer, prefix, trainIndex, stopIndex, x, y, dy, align, t
             .attr("y", y)
             .attr("x-backup", x)
             .attr("fill", 'red')
+            .attr("font-size",10)
             .style("opacity", 1)
             .style("font-family", "Segoe UI")
             .style("font-size", 10)
@@ -1865,6 +1893,7 @@ function drawTrains(trainIndex) {
 function preparePopup() {
     // Popup for changing plan
     popupRect = layer4.append("rect")
+        .attr("id","popup-rect")
         .attr("x", 0)
         .attr("y", 0)
         .attr("rx", 6)
@@ -1873,9 +1902,13 @@ function preparePopup() {
         .attr("height", popupHeight + 1)
         .style("opacity", 0.8)
         .attr("fill", "#610B0B")
+        .attr("vector-effect", "non-scaling-stroke")
         .style("visibility", "hidden");
 
     popup = layer4.append("foreignObject")
+        .attr("font-size",20)
+        .style("font-size",20)
+        .attr("id","popup-content")
         .attr("class", "popup")
         .attr("x", 0)
         .attr("y", 0)
@@ -1979,7 +2012,6 @@ drawTrains(-1);
 //
 preparePopup();
 
-console.log(baseSvg);
 
 function generateCoordinate(trainIndex){
   var train = trains[trainIndex];
@@ -2082,22 +2114,22 @@ function updatePopupCircleEdit(){
   htmlText += '<h2>Ga: ' + stations.filter(st => st.id == currentStationIndex)[0].name + '</h2>';
   htmlText += '<h2>' + timeChangingText[currentColorType][currentChange] + xToHour(x) + ':' + xToMinute(x) + '</h2>';
   if(currentChange === changeType.PASS_THROUGH){
-      htmlText += '<button id="apply-add-action" type="submit" class="btn btn-primary btn-block" onclick="addAction('+currentStationIndex+')" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">Thêm Đón/Tiễn</button>';
+      htmlText += '<button id="apply-add-action" type="submit" class="btn btn-primary btn-block" onclick="addAction('+currentStationIndex+')" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-weight:500">Thêm Đón/Tiễn</button>';
   } else if(currentChange === changeType.ARRIVAL || currentChange === changeType.DEPARTED){
-    htmlText += '<button id="apply-remove-action" type="submit" class="btn btn-danger btn-block" onclick="removeAction()" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">Xóa tác nghiệp</button>';
-    htmlText += '<button id="apply-add-note" type="submit" class="btn btn-primary btn-block" onclick="addNote('+currentStationIndex+')" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">Thêm Cắt/Móc</button>';
+    htmlText += '<button id="apply-remove-action" type="submit" class="btn btn-danger btn-block" onclick="removeAction()" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-weight:500">Xóa tác nghiệp</button>';
+    htmlText += '<button id="apply-add-note" type="submit" class="btn btn-primary btn-block" onclick="addNote('+currentStationIndex+')" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-weight:500">Thêm Cắt/Móc</button>';
     htmlText += '<div id="add-note" class="input-group" style="display:none"><input id="add-note-content" value="'+getNoteContent()+'" class="form-control" /><div class="input-group-append"><button type="button" onclick="addNoteContent()" class="btn btn-outline-secondary">Thêm</button></div></div>'
   }
 
   if(currentStopIndex === 0 || currentStopIndex === (trains[currentTrainIndex].stops.length - 1)){
-    htmlText += '<button id="apply-edit-info" type="submit" class="btn btn-primary btn-block" onclick="editTrainInfo()" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">Sửa Thông Tin</button>';
+    htmlText += '<button id="apply-edit-info" type="submit" class="btn btn-primary btn-block" onclick="editTrainInfo()" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-weight:500">Sửa Thông Tin</button>';
     htmlText += '<div id="div-edit-train-name" class="input-group" style="display:none"><input id="edit-train-name" value="'+trains[currentTrainIndex].name+'" class="form-control" /></div>'
     htmlText += '<div id="div-edit-train-engine" class="input-group" style="display:none"><input id="edit-train-engine" value="'+trains[currentTrainIndex].engine+'" class="form-control" /><div class="input-group-append"><button type="button" onclick="updateTrainInfo()" class="btn btn-outline-secondary">Sửa</button></div></div>'
   }
   else {
 
   }
-  htmlText += '<button id="cancel" type="submit" class="btn btn-danger btn-block" onclick="cancelChangeTime()" style="margin: 10px 0 00px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">Hủy</button>';
+  htmlText += '<button id="cancel" type="submit" class="btn btn-danger btn-block" onclick="cancelChangeTime()" style="margin: 10px 0 00px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-weight:500">Hủy</button>';
   popup.html(htmlText);
 }
 
@@ -2197,6 +2229,9 @@ function clearTrainLine(k){
   console.log("clear train name");
   d3.selectAll("[id^='trainname_in_"+k+"']").each(function(){ this.remove(); });
   d3.selectAll("[id^='trainname_out_"+k+"']").each(function(){ this.remove(); });
+  console.log("clear train engine");
+  d3.selectAll("[id^='trainengine_in_"+k+"']").each(function(){ this.remove(); });
+  d3.selectAll("[id^='trainengine_out_"+k+"']").each(function(){ this.remove(); });
 }
 
 function getClickGa(arrXY){
@@ -2246,13 +2281,13 @@ function updatePopupCircleClick(gaid,x,y){
   htmlText += '<h2>' + timeChangingText[currentColorType][currentChange] + xToHour(x) + ':' + xToMinute(x) + '</h2>';
     // htmlText += '<button id="action" type="submit" class="btn btn-success btn-block" onclick="applyAction()" style="margin: 10px 0 0 0;padding: 0px 15px 0px 15px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">' + confirmLabel[currentChange] + '</button>';
   if(currentChange === changeType.PASS_THROUGH){
-      htmlText += '<button id="apply" type="submit" class="btn btn-primary btn-block" onclick="addAction('+gaid+')" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">Thêm Đón/Tiễn</button>';
+      htmlText += '<button id="apply" type="submit" class="btn btn-primary btn-block" onclick="addAction('+gaid+')" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-weight:500">Thêm Đón/Tiễn</button>';
   }
   if(virtualStops[currentTrainIndex].type == 1){
-      htmlText += '<button id="apply" type="submit" class="btn btn-danger btn-block" onclick="removeAction()" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">Xóa tác nghiệp</button>';
+      htmlText += '<button id="apply" type="submit" class="btn btn-danger btn-block" onclick="removeAction()" style="margin: 10px 0 0 0px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-weight:500">Xóa tác nghiệp</button>';
   }
 
-  htmlText += '<button id="cancel" type="submit" class="btn btn-danger btn-block" onclick="cancelChangeTime()" style="margin: 10px 0 00px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-size: 14px;font-weight:500">Hủy</button>';
+  htmlText += '<button id="cancel" type="submit" class="btn btn-danger btn-block" onclick="cancelChangeTime()" style="margin: 10px 0 00px;padding: 0px 10px 0px 10px;font-family: \'Segoe UI\';font-weight:500">Hủy</button>';
   //htmlText += '<input type="text" class="form-control" id="time" placeholder="Thời gian">';
   popup.html(htmlText);
   showPopupClick(x,y);
@@ -2262,6 +2297,8 @@ function showPopupClick(cx, cy){
   console.log("show popup at:",cx+"|"+cy);
   popup.style("visibility", "visible")
       .attr("class", "popupend")
+      .attr("font-size",14)
+      .style("font-size",14)
       .attr("x", parseFloat(cx))
       .attr("y", parseFloat(cy) - 20)
       .attr("class", "popup");
@@ -2269,7 +2306,8 @@ function showPopupClick(cx, cy){
       .attr("x", parseFloat(cx))
       .attr("y", parseFloat(cy) - 20)
       .attr("width", popupWidth + 1)
-      .attr("height", popupHeightEnd + 1)
+      .attr("vector-effect","non-scaling-stroke")
+      .attr("height", popupHeightEnd + 1);
   popupOpen = true;
 }
 
@@ -2303,6 +2341,14 @@ function updateCoordsText(x,y){
   var textObj = d3.select("#"+currentTextId);
   textObj.attr("x", x);
   textObj.attr("y", y);
+}
+
+function updateCoordsTextEnd(x,y){
+  // var textObj = d3.select("#"+currentTextId);
+  // var curTransform = textObj.attr('transform');
+  // curTransform = curTransform.split(',');
+  // curTransform[1] = x;
+  // textObj.attr("transform",curTransform.join(","));
 }
 
 function countEdge(trainIndex){
